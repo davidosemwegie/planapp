@@ -45,7 +45,8 @@ module.exports = {
         grey: '#DBDBDB',
         red: "#D33632",
         green: '#59C8A7',
-        white: '#ffffff'
+        white: '#ffffff',
+        blue: '#318FEB'
     },
     text: {
         base: 'sf-rounded-heavy',

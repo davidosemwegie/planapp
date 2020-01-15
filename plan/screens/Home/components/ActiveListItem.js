@@ -3,12 +3,13 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
 } from "react-native";
 import Swipeable from 'react-native-swipeable-row';
 import * as firebase from 'firebase'
 import * as con from '../../constants'
-import { Feather } from '@expo/vector-icons';
+import { Feather, AntDesign, FontAwesome } from '@expo/vector-icons';
 
 /* HAD TO PUT THIS STYLE BLOCK ON TOP FOR SOME REASON */
 const styles = StyleSheet.create({
@@ -40,12 +41,36 @@ const styles = StyleSheet.create({
         color: con.colors.red
     },
     doneSwipe: {
-        backgroundColor: con.colors.green, 
-        flex: 1, 
-        flexDirection: 'row', 
-        justifyContent: 'flex-end', 
-        alignItems: 'center', 
+        backgroundColor: con.colors.green,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
         paddingRight: 40
+    },
+    undoSwipe: {
+        backgroundColor: con.colors.blue,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        paddingRight: 40
+    },
+    editButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: con.colors.blue,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    deleteButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: con.colors.red,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 
@@ -56,12 +81,26 @@ const SwipeIcon = (props) => {
     )
 }
 
-const leftContent = <View style={styles.doneSwipe}><SwipeIcon name="check" /></View>
+// const LeftSwipe = (props) => {
+//     if (props.status == 0) {
+//         return (
+//             <View style={styles.doneSwipe}><SwipeIcon name="check" /></View>
+//         )
+//     } else if (props.stutus == 1) {
+//         return (
+//             <View style={styles.doneSwipe}><FontAwesome name="undo" size={30} color={con.colors.blue} /></View>
+//         )
+//     }
+// }
 
-const rightButtons = [
-    <TouchableOpacity><Text>Button 1</Text></TouchableOpacity>,
-    <TouchableOpacity><Text>Button 2</Text></TouchableOpacity>
-];
+const leftContent0 = <View style={styles.doneSwipe}><SwipeIcon name="check" /></View>
+const leftContent1 = <View style={styles.undoSwipe}><FontAwesome name="undo" size={30} color={con.colors.white} /></View>
+
+// const rightButtons = (props) [
+//     <TouchableOpacity style={styles.editButton} onPress={props.editButton}><Feather name="edit" size={30} color={con.colors.white} /></TouchableOpacity>,
+//     <TouchableOpacity style={styles.deleteButton} onPress={props.deleteButton}><AntDesign name="delete" size={30} color={con.colors.white} /></TouchableOpacity>
+// ]
+
 
 class Row extends Component {
     state = {
@@ -82,27 +121,63 @@ class Row extends Component {
     }
 
     undo = id => {
-        alert(id)
+        const db = firebase.database().ref(`/${this.state.uid}/active/${id}`)
+
+        db.update({ status: 0 })
     }
 
 
     edit = id => {
-        alert(id)
+        alert(`edit button pressed with ${id}`)
     }
 
     delete = id => {
-        alert(id)
+        const db = firebase.database().ref(`/${this.state.uid}/active/${id}`)
+
+        Alert.alert(
+            'DELETE THIS ACTIVITY?',
+            'Please confirm below',
+            [
+                //   {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => db.remove() },
+            ],
+            { cancelable: false },
+        );
     }
 
     render() {
-        return (
-            <Swipeable
-                leftContent={leftContent}
-                onLeftActionRelease={() => this.done(this.props.id)}
-                rightButtons={rightButtons}>
-                {this.props.children}
-            </Swipeable>
-        )
+
+
+        const rightButtons = [
+            <TouchableOpacity style={styles.editButton} onPress={() => this.edit(this.props.id)}><Feather name="edit" size={30} color={con.colors.white} /></TouchableOpacity>,
+            <TouchableOpacity style={styles.deleteButton} onPress={() => this.delete(this.props.id)}><AntDesign name="delete" size={30} color={con.colors.white} /></TouchableOpacity>
+        ]
+
+        if (this.props.status == 0) {
+            return (
+                <Swipeable
+                    leftContent={leftContent0}
+                    onLeftActionRelease={() => this.done(this.props.id)}
+                    rightButtons={rightButtons}>
+                    {this.props.children}
+                </Swipeable>
+            )
+        } else if (this.props.status == 1) {
+            return (
+                <Swipeable
+                    leftContent={leftContent1}
+                    onLeftActionRelease={() => this.undo(this.props.id)}
+                    rightButtons={rightButtons}>
+                    {this.props.children}
+                </Swipeable>
+            )
+        }
+
     }
 }
 
@@ -126,21 +201,21 @@ class ActiveListItem extends Component {
 
             if (diff != 0) {
                 return (
-                    <Row id={this.props.id}>
+                    <Row id={this.props.id} status={this.props.status}>
                         <Text style={styles.differentDateText} allowFontScaling={false}>{this.props.title}</Text>
                     </Row>
                 )
 
             } else if (date !== today) {
                 return (
-                    <Row id={this.props.id}>
+                    <Row id={this.props.id} status={this.props.status}>
                         <Text style={styles.activeText} allowFontScaling={false}>{this.props.title}</Text>
                     </Row>
                 )
             }
         } else if (this.props.status == 1) {
             return (
-                <Row id={this.props.id}>
+                <Row id={this.props.id} status={this.props.status}>
                     <Text style={styles.doneText} allowFontScaling={false}>{this.props.title}</Text>
                 </Row>
             )
