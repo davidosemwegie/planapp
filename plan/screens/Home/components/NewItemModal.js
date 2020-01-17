@@ -84,6 +84,7 @@ class NewItemModal extends Component {
                     <Animated.View style={{ marginBottom: this.paddingInput }}>
                         <View>
                             <TextInput
+                                value={this.props.value}
                                 style={styles.TextInput}
                                 placeholder="Type new activity here"
                                 autoCapitalize="none"

@@ -1,5 +1,5 @@
 /* FILE THAT DETERMINES THE COLORS OF THE PAGE */
-import { AppThemeState } from 'react-native'
+//import { AppThemeState } from 'react-native'
 // import {AsyncStorage} from 'react-native';
 
 // var isDarkMode = AppThemeState.currentTheme ;

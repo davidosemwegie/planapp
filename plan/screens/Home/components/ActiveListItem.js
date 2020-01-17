@@ -11,6 +11,8 @@ import * as firebase from 'firebase'
 import * as con from '../../constants'
 import { Feather, AntDesign, FontAwesome } from '@expo/vector-icons';
 
+import NewItemModal from './NewItemModal'
+
 /* HAD TO PUT THIS STYLE BLOCK ON TOP FOR SOME REASON */
 const styles = StyleSheet.create({
     container: {
@@ -48,6 +50,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingRight: 40
     },
+    deleteSwipe: {
+        backgroundColor: con.colors.red,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingLeft: 40
+    },
     undoSwipe: {
         backgroundColor: con.colors.blue,
         flex: 1,
@@ -62,7 +72,15 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         backgroundColor: con.colors.blue,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.20,
+        shadowRadius: 5,
+        elevation: 5,
     },
     deleteButton: {
         width: 50,
@@ -70,7 +88,15 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         backgroundColor: con.colors.red,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.20,
+        shadowRadius: 5,
+        elevation: 5,
     }
 });
 
@@ -96,6 +122,9 @@ const SwipeIcon = (props) => {
 const leftContent0 = <View style={styles.doneSwipe}><SwipeIcon name="check" /></View>
 const leftContent1 = <View style={styles.undoSwipe}><FontAwesome name="undo" size={30} color={con.colors.white} /></View>
 
+
+const rightContent = <View style={styles.deleteSwipe}><AntDesign name="delete" size={25} color={con.colors.white} /></View>
+
 // const rightButtons = (props) [
 //     <TouchableOpacity style={styles.editButton} onPress={props.editButton}><Feather name="edit" size={30} color={con.colors.white} /></TouchableOpacity>,
 //     <TouchableOpacity style={styles.deleteButton} onPress={props.deleteButton}><AntDesign name="delete" size={30} color={con.colors.white} /></TouchableOpacity>
@@ -103,9 +132,26 @@ const leftContent1 = <View style={styles.undoSwipe}><FontAwesome name="undo" siz
 
 
 class Row extends Component {
-    state = {
-        uid: ""
+
+    constructor(props) {
+        super(props);
+
+        //paddingInput = new Animated.Value(0);
+
+        this.state = {
+            uid: "",
+            eventTitle: "",
+            isModalVisible: false,
+            rowId: ""
+        }
+
+        //this.addEvent = this.addEvent.bind(this)
     }
+    // state = {
+    //     uid: "",
+    //     isVisible: false,
+    //     eventTitle: ""
+    // }
 
     componentDidMount() {
 
@@ -127,8 +173,20 @@ class Row extends Component {
     }
 
 
-    edit = id => {
-        alert(`edit button pressed with ${id}`)
+    edit = (id, title) => {
+
+        this.setState({ isModalVisible: true })
+        this.setState({ rowId: id })
+        this.setState({ eventTitle: title })
+    }
+
+    editUpdate = () => {
+        const id = this.state.rowId
+        const title = this.state.eventTitle
+
+        const db = firebase.database().ref(`/${this.state.uid}/active/${id}`)
+
+        db.update({ eventTitle: title })
     }
 
     delete = id => {
@@ -154,27 +212,41 @@ class Row extends Component {
 
 
         const rightButtons = [
-            <TouchableOpacity style={styles.editButton} onPress={() => this.edit(this.props.id)}><Feather name="edit" size={30} color={con.colors.white} /></TouchableOpacity>,
-            <TouchableOpacity style={styles.deleteButton} onPress={() => this.delete(this.props.id)}><AntDesign name="delete" size={30} color={con.colors.white} /></TouchableOpacity>
+            <TouchableOpacity style={styles.editButton}><Feather name="edit" size={25} color={con.colors.white} /></TouchableOpacity>,
+            <TouchableOpacity style={styles.deleteButton} onPress={() => this.delete(this.props.id)}><AntDesign name="delete" size={25} color={con.colors.white} /></TouchableOpacity>
         ]
 
         if (this.props.status == 0) {
             return (
-                <Swipeable
-                    leftContent={leftContent0}
-                    onLeftActionRelease={() => this.done(this.props.id)}
-                    rightButtons={rightButtons}>
-                    {this.props.children}
-                </Swipeable>
+                <View>
+                    <Swipeable
+                        leftContent={leftContent0}
+                        onLeftActionRelease={() => this.done(this.props.id)}
+                        rightContent={rightContent}
+                        onRightActionRelease={() => this.delete(this.props.id)}
+                        bounceOnMount={true}>
+                        <TouchableOpacity onLongPress={() => this.edit(this.props.id, this.props.title)}>
+                            {this.props.children}
+                        </TouchableOpacity>
+                    </Swipeable>
+                    <NewItemModal
+                        isVisible={this.state.isModalVisible}
+                        value={`${this.state.eventTitle}`}
+                        onChangeText={eventTitle => this.setState({ eventTitle })}
+                        onSubmitEditing={this.editUpdate}
+                        onEndEditing={() => this.setState({ isModalVisible: false })} />
+                </View>
             )
         } else if (this.props.status == 1) {
             return (
-                <Swipeable
-                    leftContent={leftContent1}
-                    onLeftActionRelease={() => this.undo(this.props.id)}
-                    rightButtons={rightButtons}>
-                    {this.props.children}
-                </Swipeable>
+                <View>
+                    <Swipeable
+                        leftContent={leftContent1}
+                        onLeftActionRelease={() => this.undo(this.props.id)}
+                        rightButtons={rightButtons}>
+                        {this.props.children}
+                    </Swipeable>
+                </View>
             )
         }
 
@@ -201,14 +273,14 @@ class ActiveListItem extends Component {
 
             if (diff != 0) {
                 return (
-                    <Row id={this.props.id} status={this.props.status}>
+                    <Row id={this.props.id} status={this.props.status} title={this.props.title}>
                         <Text style={styles.differentDateText} allowFontScaling={false}>{this.props.title}</Text>
                     </Row>
                 )
 
             } else if (date !== today) {
                 return (
-                    <Row id={this.props.id} status={this.props.status}>
+                    <Row id={this.props.id} status={this.props.status} title={this.props.title}>
                         <Text style={styles.activeText} allowFontScaling={false}>{this.props.title}</Text>
                     </Row>
                 )
