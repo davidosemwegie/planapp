@@ -28,8 +28,10 @@ const Header = (props) => {
     return (
         <View style={container}>
             <View style={headerMain}>
-                <Text style={title}>{props.title}</Text>
-                <Text style={subTitle}>{props.subText}</Text>
+                <TouchableOpacity onPress={props.onTitlePress}>
+                    <Text allowFontScaling={false} style={title}>{props.title}</Text>
+                </TouchableOpacity>
+                <Text allowFontScaling={false} style={subTitle}>{props.subText}</Text>
             </View>
             <View style={iconContainer}>
                 <HeaderIcon  {...props} />
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     title: {
-        marginTop: 65,
+        marginTop: 70,
         fontSize: 40,
         fontFamily: con.text.base,
         fontWeight: '100',
@@ -68,7 +70,7 @@ const styles = StyleSheet.create({
     },
     subTitle: {
         fontFamily: con.text.alt,
-        fontSize: 25,
+        fontSize: 20,
         color: con.colors.grey,
         marginTop: 10,
         //marginLeft: 20

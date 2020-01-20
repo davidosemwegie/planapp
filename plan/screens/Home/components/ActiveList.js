@@ -6,7 +6,7 @@ import {
     FlatList
 } from "react-native";
 import * as firebase from 'firebase'
-import PTRView from 'react-native-pull-to-refresh';
+import { Notifications } from 'expo';
 
 import ActiveListItem from './ActiveListItem'
 
@@ -18,8 +18,6 @@ class ActiveList extends Component {
     constructor(props) {
         super(props);
 
-        //let ds = new ListView.DataSource({rowHasChanged:(r1, r2) => r1 != r2})
-
         const today = new Date();
         const year = today.getFullYear();      // 1980
         const month = today.getMonth() + 1;        // 6
@@ -28,20 +26,22 @@ class ActiveList extends Component {
 
 
         this.state = {
-            //dataSource: ds,
             data: [],
-            date: todayDate
+            date: todayDate,
+            badgeNumber: 0
         }
 
         this.getList = this.getList.bind(this)
-
-        //this.componentDidMount = this.componentDidMount.bind(this)
+        this.updateBadgeNumber = this.updateBadgeNumber.bind(this)
     }
 
+    updateBadgeNumber = () => {
+        const list = this.state.data;
 
-    // state = {
-    //     data: []
-    // }
+        list.forEach(element => console.log(element.status))
+
+    }
+
 
     getList = () => {
 
@@ -52,8 +52,9 @@ class ActiveList extends Component {
         const todayDate = `${month}/${date}/${year}`
 
 
+
         const that = this
-        const { email, displayName, uid } = firebase.auth().currentUser;
+        const { uid } = firebase.auth().currentUser;
         var activeList = []
 
         const db = firebase.database().ref(`/${uid}/active`).orderByChild('status')
@@ -74,7 +75,10 @@ class ActiveList extends Component {
                         eventTitle
                     }
                     activeList.push(record)
-                    //console.log(activeList)
+
+                    if (status == 0) {
+                        badgeNumber = badgeNumber + 1;
+                    }
                 })
 
                 that.setState({ data: activeList })
@@ -96,8 +100,11 @@ class ActiveList extends Component {
         const date = today.getDate();          // 31
         const todayDate = `${month}/${date}/${year}`
 
-        const { email, displayName, uid } = firebase.auth().currentUser;
+        const { uid } = firebase.auth().currentUser;
         const db = firebase.database().ref(`/${uid}/active`).orderByChild('status')
+
+
+        Notifications.getBadgeNumberAsync().then(data => console.log(`badge number is ${data}`))
 
         db.on('child_added', function (data) {
 
@@ -151,8 +158,6 @@ class ActiveList extends Component {
 
             that.setState({ data: newlist })
         })
-
-
 
     }
 

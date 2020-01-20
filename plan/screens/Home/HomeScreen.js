@@ -3,12 +3,19 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert,
+    Platform,
+    Button
 } from "react-native";
 
 import * as common from '../common'
 import * as comp from './components'
 import * as firebase from 'firebase'
+
+import { Constants, Notifications } from 'expo';
+
+import {Permissions} from 'expo-permissions'
 
 class HomeScreen extends Component {
 
@@ -26,13 +33,16 @@ class HomeScreen extends Component {
         this.state = {
             date: "",
             eventTitle: "",
-            isModalVisible: false
+            isModalVisible: false,
+            listTitle: "To-do",
+            id: null
         }
 
         this.addEvent = this.addEvent.bind(this)
     }
 
     componentDidMount() {
+
         const today = new Date();
 
         const todayString = today.toDateString();
@@ -70,8 +80,13 @@ class HomeScreen extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <common.Screen subText={this.state.date} headerIcon='md-settings'>
-                    <View style={{marginBottom: 80}}>
+                <common.Screen subText={this.state.date} headerIcon='md-settings' 
+                headerIconPress={() => this.props.navigation.navigate("Settings")}
+                    // title={this.state.listTitle}
+                    // title="Hi David"
+                // onTitlePress={() => alert("Title Pressed")}
+                >
+                    <View style={{ marginBottom: 80 }}>
                         <comp.NewItemModal
                             isVisible={this.state.isModalVisible}
                             onChangeText={eventTitle => this.setState({ eventTitle })}

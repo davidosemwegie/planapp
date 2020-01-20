@@ -243,7 +243,8 @@ class Row extends Component {
                     <Swipeable
                         leftContent={leftContent1}
                         onLeftActionRelease={() => this.undo(this.props.id)}
-                        rightButtons={rightButtons}>
+                        rightContent={rightContent}
+                        onRightActionRelease={() => this.delete(this.props.id)}>
                         {this.props.children}
                     </Swipeable>
                 </View>
