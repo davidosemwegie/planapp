@@ -6,7 +6,8 @@ import {
     TouchableOpacity,
     Alert,
     Platform,
-    Button
+    Button, 
+    StatusBar
 } from "react-native";
 
 import * as common from '../common'
@@ -77,11 +78,29 @@ class HomeScreen extends Component {
         this.setState({ isModalVisible: false })
     }
 
+    logout () {
+        Alert.alert(
+            'Are you sure you want to sign out?',
+            'Please confirm below',
+            [
+                //   {text: 'Ask me later', onPress: () => console.log('Ask me later pressed')},
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => firebase.auth().signOut() },
+            ],
+            { cancelable: false },
+        );
+    }
+
     render() {
         return (
             <View style={styles.container}>
-                <common.Screen subText={this.state.date} headerIcon='md-settings' 
-                headerIconPress={() => this.props.navigation.navigate("Settings")}
+                <common.Screen subText={this.state.date} headerIcon='md-log-out' 
+                //headerIconPress={() => this.props.navigation.navigate("Settings")}
+                headerIconPress={() => this.logout()}
                     // title={this.state.listTitle}
                     // title="Hi David"
                 // onTitlePress={() => alert("Title Pressed")}
@@ -95,6 +114,17 @@ class HomeScreen extends Component {
                         <comp.ActiveList />
                     </View>
                 </common.Screen>
+                {/* <common.Header
+                subText={this.state.date} headerIcon='md-log-out' 
+                headerIconPress={() => this.logout()}/>
+                <View style={{ marginBottom: 80 }}>
+                        <comp.NewItemModal
+                            isVisible={this.state.isModalVisible}
+                            onChangeText={eventTitle => this.setState({ eventTitle })}
+                            onSubmitEditing={this.addEvent}
+                            onEndEditing={() => this.setState({ isModalVisible: false })} />
+                        <comp.ActiveList />
+                    </View> */}
                 <comp.BottomTab
                     addButton={() => this.setState({ isModalVisible: true })}
                 />

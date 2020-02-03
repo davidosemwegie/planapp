@@ -1,5 +1,6 @@
 import LoadingScreen from './Auth/LoadingScreen'
 import LoginScreen from './Auth/LoginScreen'
+import WelcomeScreen from './Auth/WelcomeScreen'
 import RegisterScreen from './Auth/RegisterScreen'
 import HomeScreen from './Home/HomeScreen'
 import SettingsScreen from './Settings/SettingsScreen'
@@ -11,5 +12,6 @@ module.exports = {
     RegisterScreen,
     HomeScreen,
     SettingsScreen,
-    Loader
+    Loader,
+    WelcomeScreen
 }

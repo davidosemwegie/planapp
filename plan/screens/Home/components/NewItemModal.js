@@ -88,7 +88,7 @@ class NewItemModal extends Component {
                                 style={styles.TextInput}
                                 placeholder="Type new activity here"
                                 autoCapitalize="none"
-                                maxLength={30}
+                                maxLength={50}
                                 autoFocus
                                 onChangeText={this.props.onChangeText}
                                 onSubmitEditing={this.props.onSubmitEditing}

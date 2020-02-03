@@ -5,7 +5,8 @@ import {
     StyleSheet,
     TouchableOpacity,
     Button,
-    TextInput
+    TextInput,
+    Alert, KeyboardAvoidingView
 } from "react-native";
 //import * as Google from 'expo-google-app-auth';
 import * as firebase from 'firebase'
@@ -21,6 +22,35 @@ class RegisterScreen extends Component {
         password: "",
         errorMessage: null
     }
+
+    // handleSignUp = () => {
+    //     const { name, email, password } = this.state
+
+    //     const db = firebase.database().ref('/users')
+
+    //     firebase
+    //         .auth()
+    //         .createUserWithEmailAndPassword(email, password)
+    //         .then(userCredientials => {
+    //             userCredientials.user.updateProfile({
+    //                 displayName: name
+    //             })
+
+    //             // Alert.alert(`Registration Successful!`, [
+    //             //     {
+    //             //         text: 'Continue',
+    //             //         onPress: () => this.props.navigation.navigate('App'),
+    //             //         //style: 'cancel',
+    //             //     }
+    //             // ]);
+
+
+    //         })
+    //         .catch(error => this.setState({ errorMessage: error.message }))
+
+    //     //this.sendVerification()
+    // }
+
 
     handleSignUp = () => {
         const { name, email, password } = this.state
@@ -53,15 +83,18 @@ class RegisterScreen extends Component {
 
     render() {
         return (
-            <common.Screen title="Register" headerIcon="md-arrow-back" headerIconPress={() => this.props.navigation.goBack()} >
-                <View style={styles.form}>
-                    <AuthField title="First Name" onChangeText={name => this.setState({ name })} />
-                    <AuthField title="Email Address" onChangeText={email => this.setState({ email })} autoCapitalize="none" />
-                    <AuthField title="Password" secureTextEntry autoCapitalize="none" onChangeText={password => this.setState({ password })} />
-                </View>
-                
-                <common.Button title="Complete Registration" buttonColor="#A29BFE" onPress={() => this.handleSignUp()} />
-            </common.Screen>
+            <KeyboardAvoidingView style={{flex: 1}} behavior="padding">
+                <common.Screen title="Register" headerIcon="md-arrow-back" headerIconPress={() => this.props.navigation.goBack()} >
+
+                    <View style={styles.form}>
+                        <Text style={{ color: "red", flex: 1 }}>{this.state.errorMessage}</Text>
+                        <AuthField title="First Name" onChangeText={name => this.setState({ name })} />
+                        <AuthField title="Email Address" onChangeText={email => this.setState({ email })} autoCapitalize="none" />
+                        <AuthField title="Password" secureTextEntry autoCapitalize="none" onChangeText={password => this.setState({ password })} />
+                    </View>
+                    <common.Button title="Complete Registration" buttonColor="#A29BFE" onPress={() => this.handleSignUp()} />
+                </common.Screen>
+            </KeyboardAvoidingView>
             // <View style={styles.container}>
             //     <Text style={styles.greeting}>RegisterScreen</Text>
 

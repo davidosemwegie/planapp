@@ -28,11 +28,13 @@ class ActiveList extends Component {
         this.state = {
             data: [],
             date: todayDate,
-            badgeNumber: 0
+            badgeNumber: 0,
+            refreshing: false
         }
 
         this.getList = this.getList.bind(this)
         this.updateBadgeNumber = this.updateBadgeNumber.bind(this)
+        this.handleRefresh = this.handleRefresh.bind(this)
     }
 
     updateBadgeNumber = () => {
@@ -83,6 +85,8 @@ class ActiveList extends Component {
 
                 that.setState({ data: activeList })
             })
+
+            this.setState({refreshing: false})
 
     }
 
@@ -168,6 +172,51 @@ class ActiveList extends Component {
         { eventId: 4, eventTitle: "TEST" },
     ]
 
+    handleRefresh = () => {
+        //alert("refresh")
+        this.setState({refreshing: true})
+        const today = new Date();
+        const year = today.getFullYear();      // 1980
+        const month = today.getMonth() + 1;        // 6
+        const date = today.getDate();          // 31
+        const todayDate = `${month}/${date}/${year}`
+
+
+
+        const that = this
+        const { uid } = firebase.auth().currentUser;
+        var activeList = []
+
+        const db = firebase.database().ref(`/${uid}/active`).orderByChild('status')
+
+        db.once('value')
+            .then(function (snapshots) {
+                snapshots.forEach(function (data) {
+
+                    const eventId = data.key
+                    const eventTitle = data.val().eventTitle
+                    const status = data.val().status
+                    const addDate = data.val().date
+
+                    const record = {
+                        eventId,
+                        status,
+                        addDate,
+                        eventTitle
+                    }
+                    activeList.push(record)
+
+                    if (status == 0) {
+                        badgeNumber = badgeNumber + 1;
+                    }
+                })
+
+                that.setState({ data: activeList })
+            })
+
+            this.setState({refreshing: false})
+    }
+
 
     render() {
         if (this.state.data.length == 0) {
@@ -182,6 +231,8 @@ class ActiveList extends Component {
                     <FlatList
                         data={this.state.data}
                         showsVerticalScrollIndicator={false}
+                        // refreshing={this.state.refreshing}
+                        // onRefresh={() => this.handleRefresh()}
                         renderItem={({ item }) =>
                             <ActiveListItem
                                 title={item.eventTitle}

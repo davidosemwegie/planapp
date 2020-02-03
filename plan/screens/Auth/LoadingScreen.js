@@ -3,27 +3,19 @@ import {
     View,
     Text,
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator,
+    Image,
+    Dimensions
 } from "react-native";
 import * as Font from 'expo-font';
 
 import * as firebase from 'firebase'
-// var firebaseConfig = {
-//   apiKey: "AIzaSyCSfXKTEItas5KVvYr64VOIf7FpvB2kFrY",
-//   authDomain: "plan-cf664.firebaseapp.com",
-//   databaseURL: "https://plan-cf664.firebaseio.com",
-//   projectId: "plan-cf664",
-//   storageBucket: "plan-cf664.appspot.com",
-//   messagingSenderId: "806944978757",
-//   appId: "1:806944978757:web:9a7ef8b388d4e4b50c302c"
-// };
-// // Initialize Firebase
-// firebase.initializeApp(firebaseConfig);
+
 
 
 class LoadingScreen extends Component {
 
-    
+
 
     componentDidMount() {
 
@@ -50,15 +42,28 @@ class LoadingScreen extends Component {
             console.log("State has changed")
             this.props.navigation.navigate(user ? "App" : "Auth")
         })
-        
+
         //this.props.navigation.navigate("App")
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.loadingText}>Please wait while we get everything ready for you</Text>
-                <ActivityIndicator size="large" color="lightgrey" />
+                <Image
+                    style={{
+                        flex: 2,
+                        alignSelf: 'center',
+                        //height: 150,
+                        resizeMode: 'contain',
+                        width: Dimensions.get('screen').width / 1.5,
+                        // borderWidth: 1,
+                        // borderRadius: 75
+                    }}
+                    source={require('../../assets/minisplash.png')} />
+                <View style={{flex: 1}}>
+                    {/* <Text style={styles.loadingText}>Please wait while we get everything ready for you</Text> */}
+                    <ActivityIndicator size="large" color="lightgrey" />
+                </View>
             </View>
         );
     }

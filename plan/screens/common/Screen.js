@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
         backgroundColor: con.colors.light.background,
     },
     contentView: {
-        //backgroundColor: 'salmon',
         paddingTop: 25,
         height: '100%',
         marginBottom: 20

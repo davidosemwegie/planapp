@@ -44,9 +44,10 @@ export default Header;
 const styles = StyleSheet.create({
     container: {
         height: 120,
-        backgroundColor: con.colors.light.background,
+        //backgroundColor: con.colors.light.background,
         flexDirection: 'row',
-        marginHorizontal: 20
+        marginHorizontal: 20,
+        //position: 'absolute'
     },
     headerMain: {
         flex: 5,

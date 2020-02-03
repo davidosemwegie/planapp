@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "plan",
-    "slug": "plan",
+    "name": "Stuff To Do",
+    "slug": "stuff-to-do",
     "privacy": "public",
     "sdkVersion": "36.0.0",
     "platforms": [
@@ -11,7 +11,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/newicon.jpg",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -24,7 +24,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.faithourscompany.stuff-to-do",
+      "buildNumber": "1.0.0"
     },
     "description": "",
     "facebookScheme": "fb775894259560005",
